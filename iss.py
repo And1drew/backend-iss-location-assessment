@@ -32,6 +32,26 @@ def get_iss_location():
     return lat, lon
 
 
+def create_ISS():
+    iss = turtle.Turtle()
+    iss.shape(iss_icon)
+    iss.setheading(90)
+    lat, lon = get_iss_location()
+    iss.penup()
+    move_iss(iss, lon, lat)
+    return iss
+
+
+def move_iss(iss, lat, lon):
+    iss.goto(lon, lat)
+
+
+def update_iss_location():
+    lat, lon = get_iss_location()
+    move_iss(iss, lat, lon)
+    turtle.ontimer(update_iss_location(), 1)
+
+
 def create_map():
     """Draw a world map and make ISS turtle"""
     screen = turtle.Screen()
@@ -74,18 +94,13 @@ def main():
     lat, lon = get_iss_location()
     print('\nCurrent ISS Coords:  lat={:.02f} lon={:.02f}'.format(lat, lon))
 
-    screen = None
-    try:
-        screen = create_map()
-        create_indy()
+    global iss
+    screen = create_map()
+    create_indy()
+    iss = create_ISS()
 
-        iss = turtle.Turtle()
-        iss.shape(iss_icon)
-        iss.setheading(90)
-        iss.penup()
-        screen.ontimer(iss.goto(lon, lat), 5)
-    except RuntimeError as e:
-        print("Error: problem loading graphics: " + str(e))
+    screen.ontimer(update_iss_location(), 5)
+
 
     if screen is not None:
         print("click screen to exit ...")
